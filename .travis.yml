@@ -1,0 +1,39 @@
+language: julia
+os:
+  - linux
+julia:
+  - 1.0
+notifications:
+  email: false
+git:
+  depth: 99999999
+cache:
+  timeout: 1000
+  directories:
+    - downloads
+env:
+  global:
+    - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+    - BINARYBUILDER_AUTOMATIC_APPLE=false
+sudo: required
+
+# Before anything else, get the latest versions of things
+before_script:
+  - julia -e 'using Pkg; pkg"add BinaryProvider"; pkg"add BinaryBuilder#master"; Pkg.build()'
+
+script:
+  - julia build_tarballs.jl
+
+
+deploy:
+    provider: releases
+    api_key:
+        # Note; this api_key is only valid for jstrube/igraphBuilder; you need
+        # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+        secure: b8g8ty8WBMau2SQU13BwVHxuk0LkMULfacnwiJvHAvnWE3S6SQTerqOu29hbRa09bMFS5zTY790ORMd28aHimd/kjmAH3/fG3sTzPZMS0qUnzj3og8R+5FV2a8BdffNvu3jTstXIHEDfzROMlMT7XqwT6BynfDb1WAD82y4RA97iKS8PzckoPff7phpOnIeXxr3fvVS76vS9ScDJV/lnNdBQhDoLsOhOH+YAlSgJ3DB82/XpW5Z4ykayyZtTFZT0aTf229PnhDE4XM6lnU/PUfMxO4d1Thw2mSEumfxi+XiYhCiPirmq0sHOoXXIAKP9MVAkbIcm+ygKcqCpPOSp6sbpTiDFHjGrlKRaKQoUeY4tU5tr1qIHAgI0ceHQfafpKL6mytcTRD5+zpLGnW34UMTEBYrjkUNfyk7Kjll+SgFhNJ0GLmZ1eUUO7b0Pk2ZKjilAJqN4dyqwnS3VKXn6Y2WW7th1cAdeiwmR1yrxJ58YEDYr9JPp79G7KpEUnORj/Do5ZLImWo7A8q4ZAVNAV254incoxy3ClatTIBxPPYElUihgshShqjbIgq7yUwMmLy1G5VVN+4EIMgcGc9GhRk3jupDfL/J9vf7MfDNVEy7NWDVzSg2bY3VJk932IkIEocCNs51gmwVaq8CHuh9qlI58CXDhZiqKD3xpqluWQUc=
+    file_glob: true
+    file: products/*
+    skip_cleanup: true
+    on:
+        repo: jstrube/igraphBuilder
+        tags: true
